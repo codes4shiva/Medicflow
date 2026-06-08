@@ -1,0 +1,75 @@
+# Python
+backend/venv/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Django
+*.log
+db.sqlite3
+*.sqlite3
+*.sqlite
+staticfiles/
+backend/staticfiles/
+backend/local_documents/
+
+# Docker local overrides
+docker-compose.override.yml
+docker-compose.*.override.yml
+.docker/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Agent/session guidance
+# AGENTS.md and CLAUDE.md are tracked so any contributor (human or AI)
+# picks up the conventions on a fresh clone. Personal overrides go in
+# *.local.md (gitignored below) so private context never leaks into the repo.
+# CONTINUITY.md is a running session ledger and stays local. The Claude
+# agent toolkit is local workspace tooling and stays untracked.
+
+CONTINUITY.md
+*.local.md
+.claude/
+
+# Node / Frontend
+node_modules/
+apps/*/dist/
+apps/*/.vite/
+apps/clinician/backups/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Generated API types are committed (regenerate with `npm run generate`)
+# so every checkout and CI builds without a generation step.
+
+# Test / coverage reports
+coverage/
+apps/*/coverage/
+.playwright-cli/
+output/playwright/
+playwright-report/
+apps/*/playwright-report/
+test-results/
+apps/*/test-results/
+
+# OS / Misc
+.DS_Store
+Thumbs.db
+
+# Postman local workspace/export files
+.postman/
+postman/

@@ -1,0 +1,10 @@
+root = true
+indent_style = space
+
+# All files use 2 spaces by default (React, HTML, CSS, JSON)
+[*]
+indent_size = 2
+
+# Override for Python files (Django)
+[*.py]
+indent_size = 4

@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [clinician, patient, landing]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm -w @careflow/${{ matrix.app }} run lint
+
+      - name: Type check
+        run: npm -w @careflow/${{ matrix.app }} run typecheck
+
+      - name: Build
+        run: npm -w @careflow/${{ matrix.app }} run build
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: careflow
+          POSTGRES_USER: careflow_user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U careflow_user -d careflow"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          # Match the deployment runtime (backend/Dockerfile: python:3.12-slim)
+          # so tests exercise the same interpreter that runs in production.
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint Python
+        run: python -m ruff check .
+
+      - name: Check Python formatting
+        run: python -m black --check .
+
+      - name: Run Django checks
+        env:
+          DATABASE_URL: postgres://careflow_user:password@localhost:5432/careflow
+          DB_NAME: careflow
+          DB_USER: careflow_user
+          DB_PASSWORD: password
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          SECRET_KEY: "careflow-ci-test-secret-key-at-least-32-chars"
+          DEBUG: "True"
+        run: python manage.py check
+
+      - name: Check for missing migrations
+        env:
+          DATABASE_URL: postgres://careflow_user:password@localhost:5432/careflow
+          DB_NAME: careflow
+          DB_USER: careflow_user
+          DB_PASSWORD: password
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          SECRET_KEY: "careflow-ci-test-secret-key-at-least-32-chars"
+          DEBUG: "True"
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run Django tests
+        env:
+          DATABASE_URL: postgres://careflow_user:password@localhost:5432/careflow
+          DB_NAME: careflow
+          DB_USER: careflow_user
+          DB_PASSWORD: password
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          SECRET_KEY: "careflow-ci-test-secret-key-at-least-32-chars"
+          DEBUG: "True"
+        run: python manage.py test --verbosity 2
+
+  contracts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Regenerate OpenAPI schema and types
+        env:
+          SECRET_KEY: "careflow-ci-contract-secret-key-at-least-32-chars"
+          DEBUG: "True"
+        run: npm run generate
+
+      - name: Check generated API contract drift
+        run: git diff --exit-code -- packages/api-types/src/schema.yaml packages/api-types/src/generated.ts

@@ -1,0 +1,607 @@
+@import "tailwindcss";
+@import "@careflow/ui-tokens/careflow.css";
+
+@theme {
+  /* Sidebar */
+  --color-cf-sidebar-bg: #1d2735;
+  --color-cf-sidebar-surface: rgba(255, 255, 255, 0.06);
+  --color-cf-sidebar-surface-strong: rgba(255, 255, 255, 0.09);
+  --color-cf-sidebar-border: rgba(191, 210, 224, 0.14);
+  --color-cf-sidebar-text: #e6eef5;
+  --color-cf-sidebar-text-muted: #9fb0bf;
+  --color-cf-sidebar-accent: #b8cfdf;
+  --color-cf-sidebar-active-bg: rgba(255, 255, 255, 0.12);
+  --color-cf-sidebar-active-border: rgba(191, 210, 224, 0.18);
+}
+
+/* ── Dark mode token overrides ───────────────────────────────────── */
+.dark {
+  --color-cf-page-bg: var(--cf-dark-page-bg);
+  --color-cf-surface: var(--cf-dark-surface);
+  --color-cf-surface-muted: var(--cf-dark-surface-muted);
+  --color-cf-surface-soft: var(--cf-dark-surface-soft);
+  --color-cf-border: var(--cf-dark-border);
+  --color-cf-border-strong: var(--cf-dark-border-strong);
+  --color-cf-text: var(--cf-dark-text);
+  --color-cf-text-muted: var(--cf-dark-text-muted);
+  --color-cf-text-subtle: var(--cf-dark-text-subtle);
+  --color-cf-accent: var(--cf-dark-accent);
+  --color-cf-accent-hover: var(--cf-dark-accent-hover);
+  --color-cf-accent-soft: var(--cf-dark-accent-soft);
+  --color-cf-success-bg: var(--cf-dark-success-bg);
+  --color-cf-success-text: var(--cf-dark-success-text);
+  --color-cf-warning-bg: var(--cf-dark-warning-bg);
+  --color-cf-warning-text: var(--cf-dark-warning-text);
+  --color-cf-danger-bg: var(--cf-dark-danger-bg);
+  --color-cf-danger-text: var(--cf-dark-danger-text);
+  --color-cf-sidebar-bg: #111827;
+  --color-cf-sidebar-surface: rgba(255, 255, 255, 0.06);
+  --color-cf-sidebar-surface-strong: rgba(255, 255, 255, 0.1);
+  --color-cf-sidebar-border: rgba(191, 210, 224, 0.14);
+  --color-cf-sidebar-text: #e8eff5;
+  --color-cf-sidebar-text-muted: #9aaebe;
+  --color-cf-sidebar-accent: #b7cee0;
+  --color-cf-sidebar-active-bg: rgba(15, 23, 42, 0.28);
+  --color-cf-sidebar-active-border: rgba(148, 163, 184, 0.16);
+  --shadow-panel: var(--cf-dark-shadow-panel);
+  --shadow-panel-lg: var(--cf-dark-shadow-panel-lg);
+}
+
+@layer base {
+  body {
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    background:
+      radial-gradient(
+        1000px 520px at 84% -14%,
+        rgba(219, 234, 254, 0.55),
+        transparent 60%
+      ),
+      radial-gradient(
+        840px 480px at -10% 108%,
+        rgba(226, 232, 240, 0.75),
+        transparent 62%
+      ),
+      linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+    color: var(--color-cf-text);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family:
+      "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .dark body {
+    background:
+      radial-gradient(
+        1000px 520px at 84% -14%,
+        rgba(30, 64, 175, 0.22),
+        transparent 60%
+      ),
+      radial-gradient(
+        840px 480px at -10% 108%,
+        rgba(15, 23, 42, 0.85),
+        transparent 62%
+      ),
+      linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+@layer components {
+  .cf-app-shell {
+    background:
+      radial-gradient(
+        920px 520px at 88% -18%,
+        color-mix(in srgb, #dbeafe 55%, transparent),
+        transparent 62%
+      ),
+      linear-gradient(
+        180deg,
+        var(--color-cf-surface-muted),
+        var(--color-cf-page-bg)
+      );
+  }
+
+  .dark .cf-app-shell {
+    background:
+      radial-gradient(
+        920px 520px at 88% -18%,
+        rgba(59, 130, 246, 0.15),
+        transparent 62%
+      ),
+      linear-gradient(180deg, #0f172a, #111827);
+  }
+
+  .cf-route-frame {
+    border: 1px solid var(--color-cf-border);
+    /* Softened toward the navbar buttons: card radius sits between the
+       control (0.75rem) and shell (1.5rem) steps. */
+    border-radius: var(--radius-cf-card);
+    background: var(--color-cf-surface);
+    box-shadow: var(--shadow-panel-lg);
+  }
+
+  .cf-preview-surface {
+    background: var(--color-cf-surface);
+  }
+
+  .cf-admin-shell {
+    background: transparent;
+    transition: background-color 150ms ease;
+  }
+
+  .cf-admin-frame {
+    background: var(--color-cf-surface);
+  }
+
+  .cf-admin-section-card {
+    border: 1px solid var(--color-cf-border);
+    border-radius: 1.25rem;
+    background: var(--color-cf-surface);
+    box-shadow: var(--shadow-panel);
+  }
+
+  .cf-admin-subtle-card {
+    border: 1px solid var(--color-cf-border);
+    border-radius: 18px;
+    background: var(--color-cf-surface-muted);
+  }
+
+  .cf-admin-table-card {
+    background: var(--color-cf-surface);
+    overflow: hidden;
+  }
+
+  .cf-admin-table-card table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .cf-admin-table-card thead {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-cf-surface-muted) 92%, transparent),
+      color-mix(in srgb, var(--color-cf-surface-muted) 64%, transparent)
+    );
+  }
+
+  .cf-admin-table-card tbody tr {
+    transition:
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .cf-admin-table-card tbody tr:hover {
+    box-shadow: inset 3px 0 0 var(--color-cf-accent);
+  }
+
+  .cf-admin-record-modal {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-cf-surface) 98%, transparent),
+      color-mix(in srgb, var(--color-cf-surface-muted) 78%, transparent)
+    );
+  }
+
+  .cf-admin-pill-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid var(--color-cf-border);
+    border-radius: 9999px;
+    background: var(--color-cf-surface-muted);
+  }
+
+  .cf-admin-pill-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-cf-text-muted);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .cf-admin-pill-link[data-active="true"],
+  .cf-admin-pill-link.active {
+    background: var(--color-cf-surface);
+    color: var(--color-cf-text);
+    box-shadow: var(--shadow-panel);
+  }
+
+  .cf-admin-stat {
+    border: 1px solid var(--color-cf-border);
+    border-radius: 18px;
+    background: var(--color-cf-surface);
+    padding: 1rem;
+    box-shadow: var(--shadow-panel);
+  }
+
+  .cf-admin-stat[data-tone="success"] {
+    background: var(--color-cf-success-bg);
+    border-color: var(--color-cf-success-text);
+  }
+
+  .cf-admin-stat[data-tone="warning"] {
+    background: var(--color-cf-warning-bg);
+    border-color: var(--color-cf-warning-text);
+  }
+
+  .cf-ui-panel {
+    border: 1px solid var(--color-cf-border);
+    border-radius: var(--radius-cf-shell);
+    background: var(--color-cf-surface);
+    box-shadow: var(--shadow-panel-lg);
+  }
+
+  .cf-ui-panel[data-tone="subtle"] {
+    background: var(--color-cf-surface-muted);
+  }
+
+  .cf-schedule-heatmap-day {
+    color: var(--color-cf-text-muted);
+  }
+
+  .cf-schedule-heatmap-day:hover {
+    background: var(--color-cf-surface-soft);
+  }
+
+  .cf-schedule-heatmap-day[data-heatmap-level="1"],
+  .cf-schedule-heatmap-swatch[data-heatmap-level="1"] {
+    background: #e9f8ff;
+    box-shadow: inset 0 0 0 1px #d8f2ff;
+  }
+
+  .cf-schedule-heatmap-day[data-heatmap-level="2"],
+  .cf-schedule-heatmap-swatch[data-heatmap-level="2"] {
+    background: #c9f0ff;
+    box-shadow: inset 0 0 0 1px #aee4fb;
+  }
+
+  .cf-schedule-heatmap-day[data-heatmap-level="3"],
+  .cf-schedule-heatmap-swatch[data-heatmap-level="3"] {
+    background: #9de3fa;
+    box-shadow: inset 0 0 0 1px #7ed2f2;
+  }
+
+  .cf-schedule-heatmap-day[data-heatmap-level="4"],
+  .cf-schedule-heatmap-swatch[data-heatmap-level="4"] {
+    background: #73d1ef;
+    box-shadow: inset 0 0 0 1px #58c3e6;
+  }
+
+  .cf-schedule-heatmap-day[data-heatmap-level="1"],
+  .cf-schedule-heatmap-day[data-heatmap-level="2"],
+  .cf-schedule-heatmap-day[data-heatmap-level="3"],
+  .cf-schedule-heatmap-day[data-heatmap-level="4"] {
+    color: #0f172a;
+  }
+
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="1"],
+  .dark .cf-schedule-heatmap-swatch[data-heatmap-level="1"] {
+    background: rgba(125, 211, 252, 0.14);
+    box-shadow: inset 0 0 0 1px rgba(186, 230, 253, 0.18);
+  }
+
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="2"],
+  .dark .cf-schedule-heatmap-swatch[data-heatmap-level="2"] {
+    background: rgba(125, 211, 252, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(186, 230, 253, 0.24);
+  }
+
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="3"],
+  .dark .cf-schedule-heatmap-swatch[data-heatmap-level="3"] {
+    background: rgba(125, 211, 252, 0.3);
+    box-shadow: inset 0 0 0 1px rgba(186, 230, 253, 0.32);
+  }
+
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="4"],
+  .dark .cf-schedule-heatmap-swatch[data-heatmap-level="4"] {
+    background: rgba(125, 211, 252, 0.38);
+    box-shadow: inset 0 0 0 1px rgba(186, 230, 253, 0.4);
+  }
+
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="1"],
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="2"],
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="3"],
+  .dark .cf-schedule-heatmap-day[data-heatmap-level="4"] {
+    color: #f8fafc;
+  }
+
+  .cf-modal-backdrop.is-opening {
+    animation: cf-modal-backdrop-in 180ms ease-out both;
+  }
+
+  .cf-modal-backdrop.is-closing {
+    animation: cf-modal-backdrop-out 180ms ease-in both;
+  }
+
+  .cf-modal-panel.is-opening {
+    animation: cf-modal-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: 50% 46%;
+  }
+
+  .cf-modal-panel.is-closing {
+    animation: cf-modal-panel-out 160ms cubic-bezier(0.4, 0, 1, 1) both;
+    transform-origin: 50% 46%;
+  }
+
+  .cf-loading-screen {
+    background:
+      radial-gradient(
+        circle at 18% 18%,
+        color-mix(in srgb, var(--color-cf-sidebar-accent) 30%, transparent) 0
+          18rem,
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 82% 74%,
+        color-mix(in srgb, var(--color-cf-accent-soft) 94%, transparent) 0 16rem,
+        transparent 30rem
+      ),
+      linear-gradient(
+        145deg,
+        var(--color-cf-page-bg) 0%,
+        var(--color-cf-surface-soft) 100%
+      );
+  }
+
+  .cf-sidebar {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.045) 0%,
+        rgba(255, 255, 255, 0.01) 100%
+      ),
+      linear-gradient(180deg, var(--color-cf-sidebar-bg) 0%, #253445 100%);
+    border-right: 1px solid var(--color-cf-sidebar-border);
+    color: var(--color-cf-sidebar-text);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .cf-sidebar-divider {
+    height: 1px;
+    background: var(--color-cf-sidebar-border);
+  }
+
+  .cf-sidebar-brand {
+    border-radius: 0.75rem;
+  }
+
+  .cf-sidebar-brand-mark {
+    border-radius: 0.75rem;
+    background: var(--color-cf-sidebar-surface-strong);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+      0 10px 24px -18px rgba(0, 0, 0, 0.5);
+    color: var(--color-cf-sidebar-accent);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .cf-sidebar-brand-mark:hover {
+    background: var(--color-cf-sidebar-surface);
+    color: var(--color-cf-sidebar-text);
+    transform: translateY(-1px);
+  }
+
+  .cf-sidebar-brand-mark:focus-visible {
+    outline: 2px solid var(--color-cf-sidebar-accent);
+    outline-offset: 2px;
+  }
+
+  .cf-sidebar-item {
+    position: relative;
+    border-radius: 0.75rem;
+    color: var(--color-cf-sidebar-text-muted);
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .cf-sidebar-item-icon {
+    border-radius: 0.625rem;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .cf-sidebar-item:hover {
+    background: color-mix(
+      in srgb,
+      var(--color-cf-sidebar-surface) 74%,
+      transparent
+    );
+    color: var(--color-cf-sidebar-text);
+  }
+
+  .cf-sidebar-item:hover .cf-sidebar-item-icon {
+    color: var(--color-cf-sidebar-text);
+  }
+
+  .cf-sidebar-item[data-active="true"] {
+    background: var(--color-cf-sidebar-active-bg);
+    color: var(--color-cf-sidebar-text);
+    box-shadow:
+      inset 0 0 0 1px var(--color-cf-sidebar-active-border),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .cf-sidebar-item[data-active="true"] .cf-sidebar-item-icon {
+    color: var(--color-cf-sidebar-text);
+  }
+
+  .dark .cf-sidebar {
+    background:
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035), transparent 42%),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+      linear-gradient(180deg, var(--color-cf-sidebar-bg) 0%, #263642 100%);
+  }
+
+  .dark .cf-sidebar-item[data-active="true"] {
+    box-shadow:
+      inset 0 0 0 1px var(--color-cf-sidebar-active-border),
+      inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
+
+  /* Closed days / outside-hours slots. The recessed FILL is per-cell (flat, so
+     it can never seam); the diagonal HATCH is painted as ONE overlay per closed
+     run (.cf-blocked-hatch, rendered by the grids) instead of per cell. A
+     single element can't produce per-cell seams or interval-dependent moiré, so
+     the diagonal stays continuous and identical at every interval. Fill via
+     background-image so it covers the operating-cell fill the bg-* utility
+     would otherwise win in the cascade. */
+  .cf-blocked-slot {
+    background-image: linear-gradient(
+      var(--color-cf-surface-soft),
+      var(--color-cf-surface-soft)
+    );
+  }
+
+  .dark .cf-blocked-slot {
+    background-image: linear-gradient(
+      var(--color-cf-surface-muted),
+      var(--color-cf-surface-muted)
+    );
+  }
+
+  /* Soft-edged diagonal hatch — one element spans the whole closed run, so the
+     feathered ~16px bands (32px pitch) read as a single continuous texture. */
+  .cf-blocked-hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 4px,
+      color-mix(in srgb, var(--color-cf-text) 6%, transparent) 12px 20px,
+      transparent 28px 32px
+    );
+  }
+
+  .dark .cf-blocked-hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0 4px,
+      color-mix(in srgb, var(--color-cf-text) 8%, transparent) 12px 20px,
+      transparent 28px 32px
+    );
+  }
+
+  .cf-appointment-override {
+    position: relative;
+  }
+
+  .cf-appointment-override::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1.5px dashed var(--color-cf-warning-text) !important;
+    border-radius: inherit;
+  }
+}
+
+@keyframes cf-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cf-modal-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes cf-modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cf-modal-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-modal-backdrop,
+  .cf-modal-panel {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Page transition: a fade + small lift applied to the route content area
+   each time the path changes. AppShell already remounts the inner wrapper
+   via `key={location.pathname}`, so adding this class re-fires the
+   animation on every navigation. Disabled under `prefers-reduced-motion`.
+--------------------------------------------------------------------------- */
+
+@keyframes cf-page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cf-page-fade-in {
+  animation: cf-page-fade-in 360ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-page-fade-in {
+    animation: none;
+  }
+}

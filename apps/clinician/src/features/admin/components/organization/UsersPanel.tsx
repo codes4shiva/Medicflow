@@ -1,0 +1,276 @@
+import { useState } from "react";
+import { Plus, RefreshCw } from "lucide-react";
+import useAdminListControls, {
+  compareText,
+} from "../../hooks/shared/useAdminListControls";
+import useOrganizationPeople from "../../hooks/organization/useOrganizationPeople";
+import OrganizationUserModal from "./OrganizationUserModal";
+import {
+  AdminInlineNotice,
+  AdminListToolbar,
+  AdminTableCard,
+  AdminTableFooter,
+  AdminTableLoadError,
+  getAdminRowActionProps,
+} from "../shared/AdminSurface";
+import { Badge, Button } from "../../../../shared/components/ui";
+import type {
+  AdminOrganizationUser,
+  AdminSavePayload,
+  AdminSortOption,
+} from "../../types";
+import type { AdminListFilter } from "../../hooks/shared/useAdminListControls";
+
+function getPersonName(person: AdminOrganizationUser) {
+  return (
+    `${person.first_name || ""} ${person.last_name || ""}`.trim() ||
+    person.username ||
+    "User"
+  );
+}
+
+const USER_FILTERS = [
+  { key: "all", label: "All", predicate: () => true },
+  {
+    key: "active",
+    label: "Active",
+    predicate: (person) => person.is_active !== false,
+  },
+  {
+    key: "inactive",
+    label: "Inactive",
+    predicate: (person) => person.is_active === false,
+  },
+  {
+    key: "admins",
+    label: "Admins",
+    predicate: (person) => String(person.role || "").includes("admin"),
+  },
+] satisfies AdminListFilter<AdminOrganizationUser>[];
+
+const USER_SORT_OPTIONS = [
+  {
+    key: "name",
+    label: "Name",
+    compare: (a, b) => compareText(getPersonName(a), getPersonName(b)),
+  },
+  {
+    key: "username",
+    label: "Username",
+    compare: (a, b) => compareText(a.username, b.username),
+  },
+  {
+    key: "email",
+    label: "Email",
+    compare: (a, b) =>
+      compareText(a.email, b.email) ||
+      compareText(getPersonName(a), getPersonName(b)),
+  },
+  {
+    key: "role",
+    label: "Role",
+    compare: (a, b) =>
+      compareText(a.role, b.role) ||
+      compareText(getPersonName(a), getPersonName(b)),
+  },
+  {
+    key: "recent",
+    label: "Recently added",
+    compare: (a, b) =>
+      compareText(b.created_at as string, a.created_at as string) ||
+      compareText(getPersonName(a), getPersonName(b)),
+  },
+] satisfies AdminSortOption<AdminOrganizationUser>[];
+
+export default function UsersPanel() {
+  const { people, loading, saving, error, loadError, reload, savePerson } =
+    useOrganizationPeople();
+  const organizationPeople = people as AdminOrganizationUser[];
+  const {
+    activeFilter,
+    activeSort,
+    filterOptions,
+    visibleRecords: visiblePeople,
+    setActiveFilter,
+    setActiveSort,
+  } = useAdminListControls(organizationPeople, {
+    filters: USER_FILTERS,
+    sortOptions: USER_SORT_OPTIONS,
+    storageKey: "users",
+  });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPerson, setEditingPerson] =
+    useState<AdminOrganizationUser | null>(null);
+
+  const handleOpenCreate = () => {
+    setEditingPerson(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (person: AdminOrganizationUser) => {
+    setEditingPerson(person);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditingPerson(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSave = async (values: AdminSavePayload["values"]) => {
+    await savePerson({ id: editingPerson?.id || null, values });
+    handleCloseModal();
+  };
+
+  return (
+    <div className="space-y-4">
+      {error && !loadError && (
+        <AdminInlineNotice tone="danger">{error}</AdminInlineNotice>
+      )}
+
+      <AdminTableCard>
+        <AdminListToolbar
+          savingLabel={saving ? "Saving..." : ""}
+          filters={filterOptions}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          sortOptions={USER_SORT_OPTIONS}
+          activeSort={activeSort}
+          onSortChange={setActiveSort}
+          actions={
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => reload()}
+                disabled={loading || saving}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleOpenCreate}
+                disabled={saving}
+              >
+                <Plus className="h-3.5 w-3.5" /> New
+              </Button>
+            </>
+          }
+        />
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="border-b border-cf-border bg-cf-surface-soft/50 text-[10px] font-semibold uppercase tracking-[0.14em] text-cf-text-subtle">
+              <tr>
+                {["User", "Username", "Email", "Role", "Status"].map(
+                  (heading, index) => (
+                    <th
+                      key={`${heading}-${index}`}
+                      className="px-3 py-3 text-left"
+                    >
+                      {heading}
+                    </th>
+                  )
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-cf-border text-cf-text">
+              {loading ? null : loadError ? (
+                <AdminTableLoadError
+                  colSpan={5}
+                  message="Couldn't load users."
+                  onRetry={() => void reload()}
+                />
+              ) : organizationPeople.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-3 py-12 text-center text-sm text-cf-text-muted"
+                  >
+                    No users found. Add a user to assign organization-level
+                    permissions.
+                  </td>
+                </tr>
+              ) : visiblePeople.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-3 py-12 text-center text-sm text-cf-text-muted"
+                  >
+                    No users match the selected filter.
+                  </td>
+                </tr>
+              ) : (
+                visiblePeople.map((person) => {
+                  const fullName = getPersonName(person);
+                  return (
+                    <tr
+                      key={person.id}
+                      {...getAdminRowActionProps({
+                        label: `Edit user ${fullName}`,
+                        onAction: () => handleOpenEdit(person),
+                      })}
+                    >
+                      <td className="px-3 py-4">
+                        <div className="flex items-center gap-3">
+                          <span className="grid h-9 w-9 place-items-center rounded-xl bg-cf-accent/12 text-[11px] font-semibold text-cf-accent ring-1 ring-cf-accent/20">
+                            {fullName
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((part) => part.charAt(0))
+                              .join("")
+                              .toUpperCase() || "US"}
+                          </span>
+                          <div>
+                            <div className="font-semibold text-cf-text">
+                              {fullName}
+                            </div>
+                            <div className="text-[11px] text-cf-text-muted">
+                              Organization user
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-3 py-4 text-cf-text-muted">
+                        {person.username}
+                      </td>
+                      <td className="px-3 py-4 text-cf-text-muted">
+                        {person.email || "—"}
+                      </td>
+                      <td className="px-3 py-4">
+                        <Badge variant="neutral" className="capitalize">
+                          {person.role}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-4">
+                        <Badge variant={person.is_active ? "success" : "muted"}>
+                          {person.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+        <AdminTableFooter
+          shown={visiblePeople.length}
+          total={people.length}
+          label="users"
+        />
+      </AdminTableCard>
+
+      <OrganizationUserModal
+        isOpen={isModalOpen}
+        mode={editingPerson ? "edit" : "create"}
+        initialValues={editingPerson}
+        saving={saving}
+        onClose={handleCloseModal}
+        onSubmit={handleSave}
+      />
+    </div>
+  );
+}

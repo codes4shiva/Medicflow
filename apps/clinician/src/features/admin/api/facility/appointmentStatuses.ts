@@ -1,0 +1,58 @@
+import { apiRequest } from "../../../../shared/api/client";
+import { facilityParams } from "./scope";
+
+import type { ApiPayload, EntityId } from "../../../../shared/api/types";
+import type { AdminAppointmentStatus } from "../../types";
+
+export function fetchAppointmentStatuses(
+  facilityId: EntityId | null | undefined
+) {
+  return apiRequest<AdminAppointmentStatus[]>(
+    "/facilities/appointment-statuses/",
+    {
+      params: facilityParams(facilityId),
+    }
+  );
+}
+
+export function createAppointmentStatus(
+  facilityId: EntityId | null | undefined,
+  data: ApiPayload
+) {
+  return apiRequest<AdminAppointmentStatus>(
+    "/facilities/appointment-statuses/",
+    {
+      method: "POST",
+      params: facilityParams(facilityId),
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export function updateAppointmentStatus(
+  facilityId: EntityId | null | undefined,
+  id: EntityId,
+  data: ApiPayload
+) {
+  return apiRequest<AdminAppointmentStatus>(
+    `/facilities/appointment-statuses/${id}/`,
+    {
+      method: "PATCH",
+      params: facilityParams(facilityId),
+      body: JSON.stringify(data),
+    }
+  );
+}
+
+export function deleteAppointmentStatus(
+  facilityId: EntityId | null | undefined,
+  id: EntityId
+) {
+  return apiRequest<AdminAppointmentStatus>(
+    `/facilities/appointment-statuses/${id}/`,
+    {
+      method: "DELETE",
+      params: facilityParams(facilityId),
+    }
+  );
+}

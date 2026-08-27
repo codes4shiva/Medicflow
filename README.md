@@ -1,4 +1,4 @@
-# CareFlow
+# MedicFlow
 
 [![CI](https://github.com/xinyiklin/careflow/actions/workflows/ci.yml/badge.svg)](https://github.com/xinyiklin/careflow/actions/workflows/ci.yml)
 [![Landing](https://img.shields.io/badge/Landing-careflow.xinyiklin.com-1F3A60?style=flat&logo=amazon-web-services&logoColor=white)](https://careflow.xinyiklin.com)

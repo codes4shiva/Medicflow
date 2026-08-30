@@ -15,9 +15,7 @@ closer to a real clinic workspace.
 ## Live Demo
 
 - Landing page: https://careflow.xinyiklin.com
-- Clinician app: https://clinician.xinyiklin.com
-- Patient portal: https://patient.xinyiklin.com
-- Backend API: https://api.careflow.xinyiklin.com
+
 
 CareFlow uses synthetic demo data only. It is not production medical software,
 not a real EHR, and has not been formally audited or certified for HIPAA
